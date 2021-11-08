@@ -17,30 +17,46 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,   //Quitamos el banner
 
       title: 'Material App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text ('Material App Bar'),
-        ),
-
-        floatingActionButton: const BotonNewRegistro(),
-
-        body: ListView.builder(
-          itemCount: _personas.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Text(_personas[index].name + ' ' + _personas[index].lastName),
-              subtitle: Text(_personas[index].cuenta),
-              leading: CircleAvatar(
-                child: Text(_personas[index].name.substring(0, 1)),
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios),
-            );
-          }
-        ),
-      ),
+      home: Inicio(),
     );
   }
 
+}
+
+class Inicio extends StatefulWidget {
+  const Inicio({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<Inicio> createState() => _InicioState();
+}
+
+class _InicioState extends State<Inicio> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text ('Material App Bar'),
+      ),
+
+      floatingActionButton: const BotonNewRegistro(),
+
+      body: ListView.builder(
+        itemCount: personas.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(personas[index].name + ' ' + personas[index].lastName),
+            subtitle: Text(personas[index].cuenta),
+            leading: CircleAvatar(
+              child: Text(personas[index].name.substring(0, 1)),
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios),
+          );
+        }
+      ),
+    );
+  }
 }
 
 class BotonNewRegistro extends StatelessWidget {
@@ -60,7 +76,7 @@ class BotonNewRegistro extends StatelessWidget {
   }
 }
 
-List<Persona> _personas = [
+List<Persona> personas = [
     Persona('David', 'Guzmán', '20160557'),
     Persona('Pedro', 'Perez', '20160424'),
     Persona('Paco', 'Garcia', '20160363'),

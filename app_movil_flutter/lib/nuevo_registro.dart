@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'main.dart';
 
 class RegistroAlumno extends StatefulWidget {
   const RegistroAlumno({Key? key}) : super(key: key);
@@ -7,14 +8,31 @@ class RegistroAlumno extends StatefulWidget {
   State<RegistroAlumno> createState() => _RegistroAlumnoState();
 }
 
+
+
+final tname = TextEditingController();
+final tlastname = TextEditingController();
+final tcuenta = TextEditingController();
+
+
 class _RegistroAlumnoState extends State<RegistroAlumno> {
 
   String name = '';
   String lastname = '';
   String cuenta = '';
 
+  
+
   void enviar(){
     print('El usuario $name $lastname ha sido registrado');
+
+    name = tname.text;
+    lastname = tlastname.text;
+    cuenta = tcuenta.text;
+
+    personas.add(Persona(name, lastname, cuenta));
+
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const Inicio()));
   }
 
   @override
@@ -46,16 +64,18 @@ class _RegistroAlumnoState extends State<RegistroAlumno> {
 
                 const SizedBox(height: 20),
 
-                const TextField(
-                  decoration: InputDecoration(
+                  //Name
+                TextField(
+                  controller: tname,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.assignment_ind_rounded),
                     labelText: 'Nombre',
                     hintText: 'Coloca tu nombre'
                   ),
-                  // onChanged: (String nombre) {
-                  //   this.name = nombre;
-                  // },
+                  onChanged: (String nombre) {
+                    this.name = nombre;
+                  },
 
                   keyboardType: TextInputType.name,
                   
@@ -67,16 +87,18 @@ class _RegistroAlumnoState extends State<RegistroAlumno> {
                   height: 20,
                 ),
 
-                const TextField(
-                  decoration: InputDecoration(
+                  //Last Name
+                TextField(
+                  controller: tlastname,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.assignment_ind_rounded),
                     labelText: 'Apellido',
                     hintText: 'Coloca tu Apellido'
                   ),
-                  // onChanged: (String apellido) {
-                  //   this.lastname = apellido;
-                  // },
+                  onChanged: (String apellido) {
+                    this.lastname = apellido;
+                  },
 
                   keyboardType: TextInputType.name,
                   
@@ -87,16 +109,18 @@ class _RegistroAlumnoState extends State<RegistroAlumno> {
                   height: 20,
                 ),
 
-                const TextField(
-                  decoration: InputDecoration(
+                  //Cuenta
+                TextField(
+                  controller: tcuenta,
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.dialpad_outlined),
                     labelText: 'Número de Cuenta',
                     hintText: 'Coloca tu Número de Cuenta'
                   ),
-                  // onChanged: (String cuenta) {
-                  //   this.cuenta = cuenta;
-                  // },
+                  onChanged: (String cuenta) {
+                    this.cuenta = cuenta;
+                  },
 
                   keyboardType: TextInputType.number,
                   
@@ -104,6 +128,11 @@ class _RegistroAlumnoState extends State<RegistroAlumno> {
                 ),
 
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.purple, // background
+                    onPrimary: Colors.white, // foreground
+                  ),
+
                   onPressed: enviar, 
                   child: const Text('Enviar Data')
                 ),
