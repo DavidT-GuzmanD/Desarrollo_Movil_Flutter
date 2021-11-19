@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
 
       debugShowCheckedModeBanner: false,   //Quitamos el banner
 
@@ -41,7 +41,7 @@ class _InicioState extends State<Inicio> {
       ),
 
       floatingActionButton: const BotonNewRegistro(),
-
+      
       body: ListView.builder(
         itemCount: personas.length,
         itemBuilder: (BuildContext context, int index) {
@@ -52,6 +52,28 @@ class _InicioState extends State<Inicio> {
               child: Text(personas[index].name.substring(0, 1)),
             ),
             trailing: const Icon(Icons.arrow_forward_ios),
+            onLongPress: () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('¿Estás seguro eliminar?'),
+                  content:  Text('Estas seguro en eliminar al usuario: ' + personas[index].name + ' ' + personas[index].lastName),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                            this.setState(() {
+                              personas.remove(personas[index]);  
+                            });
+                        Navigator.pop(context, 'OK');
+                        },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              ),
           );
         }
       ),
