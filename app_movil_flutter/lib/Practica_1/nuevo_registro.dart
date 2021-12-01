@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
+import 'package:app_movil_flutter/Practica_1/main_1.dart';
 
 class RegistroAlumno extends StatefulWidget {
   const RegistroAlumno({Key? key}) : super(key: key);

@@ -1,200 +1,116 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
 
-import 'nuevo_registro.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+Future<Album> createAlbum(String title) async {
+  final response = await http.post(
+    Uri.parse('https://jsonplaceholder.typicode.com/albums'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'title': title,
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    // If the server did return a 201 CREATED response,
+    // then parse the JSON.
+    return Album.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 201 CREATED response,
+    // then throw an exception.
+    throw Exception('Failed to create album.');
+  }
+}
+
+class Album {
+  final int id;
+  final String title;
+
+  Album({required this.id, required this.title});
+
+  factory Album.fromJson(Map<String, dynamic> json) {
+    return Album(
+      id: json['id'],
+      title: json['title'],
+    );
+  }
+}
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  _MyAppState createState() {
+    return _MyAppState();
+  }
+}
+
+class _MyAppState extends State<MyApp> {
+  final TextEditingController _controller = TextEditingController();
+  Future<Album>? _futureAlbum;
+
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-
+    return MaterialApp(
       debugShowCheckedModeBanner: false,   //Quitamos el banner
 
-      title: 'Material App',
-      home: Inicio(),
+      title: 'Create Data Example',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Create Data Example'),
+        ),
+        body: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(8.0),
+          child: (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
+        ),
+      ),
     );
   }
 
-}
+  Column buildColumn() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        TextField(
+          controller: _controller,
+          decoration: const InputDecoration(hintText: 'Enter Title'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _futureAlbum = createAlbum(_controller.text);
+            });
+          },
+          child: const Text('Create Data'),
+        ),
+      ],
+    );
+  }
 
-class Inicio extends StatefulWidget {
-  const Inicio({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<Inicio> createState() => _InicioState();
-}
-
-class _InicioState extends State<Inicio> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text ('Material App Bar'),
-      ),
-
-      floatingActionButton: const BotonNewRegistro(),
-      
-      body: ListView.builder(
-        itemCount: personas.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(personas[index].name + ' ' + personas[index].lastName),
-            subtitle: Text(personas[index].cuenta),
-            leading: CircleAvatar(
-              child: Text(personas[index].name.substring(0, 1)),
-            ),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onLongPress: () => showDialog<String>(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  title: const Text('¿Estás seguro eliminar?'),
-                  content:  Text('Estas seguro en eliminar al usuario: ' + personas[index].name + ' ' + personas[index].lastName),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, 'Cancel'),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                            this.setState(() {
-                              personas.remove(personas[index]);  
-                            });
-                        Navigator.pop(context, 'OK');
-                        },
-                      child: const Text('OK'),
-                    ),
-                  ],
-                ),
-              ),
-          );
+  FutureBuilder<Album> buildFutureBuilder() {
+    return FutureBuilder<Album>(
+      future: _futureAlbum,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Text(snapshot.data!.title);
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
         }
-      ),
-    );
-  }
-}
 
-class BotonNewRegistro extends StatelessWidget {
-  const BotonNewRegistro({Key? key}) : super(key: key);
-
-  
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: Colors.green,
-      child: const Icon(Icons.people_alt_outlined),
-      onPressed: () {
-        // print('Hola mundo');
-        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const RegistroAlumno()));
+        return const CircularProgressIndicator();
       },
     );
   }
 }
-
-List<Persona> personas = [
-    Persona('David', 'Guzmán', '20160557'),
-    Persona('Pedro', 'Perez', '20160424'),
-    Persona('Paco', 'Garcia', '20160363'),
-    Persona('Solo', 'Vino', '20172702'),
-];
-
-
-class Persona {
-  String name;
-  String lastName;
-  String cuenta;
-
-  Persona(this.name, this.lastName, this.cuenta);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// class MyHomePage extends StatefulWidget {
-//   const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-
-//   final String title;
-
-//   @override
-//   State<MyHomePage> createState() => _MyHomePageState();
-// }
-
-// class _MyHomePageState extends State<MyHomePage> {
-//   int _counter = 0;
-
-//   void _incrementCounter() {
-//     setState(() {
-//       _counter++;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(widget.title),
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             const Text(
-//               'You have pushed the button this many times:',
-//             ),
-//             Text(
-//               '$_counter',
-//               style: Theme.of(context).textTheme.headline4,
-//             ),
-//           ],
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: _incrementCounter,
-//         tooltip: 'Increment',
-//         child: const Icon(Icons.add),
-//       ), // This trailing comma makes auto-formatting nicer for build methods.
-//     );
-//   }
-// }
